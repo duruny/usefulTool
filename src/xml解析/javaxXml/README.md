@@ -1,4 +1,4 @@
-		生成的xml例子。
+	生成的xml例子。
 
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><br />
 \<root><br />
