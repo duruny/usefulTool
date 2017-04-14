@@ -65,6 +65,13 @@ import static com.sun.btrace.BTraceUtils.println;
 
 
  本测试案例使用的btrace版本是1.39，又不成功的可能跟btrace版本有关。
+
+ 结果输出到文件
+ ./btrace -o mylog.txt $pid HelloWorld.java
+ mylog会生成在应用的启动目录，而不是btrace的启动目录。其次，执行过一次-o之后，再执行btrace不加-o 也不会再输出回console，直到应用重启为止。
+
+ 所以有时也直接用转向了事：
+ ./btrace $pid HelloWorld.java > mylog  转向输出的路径与-o不同，也不会出现-o的问题
  */
 
 /**
@@ -296,25 +303,4 @@ public class Tracker
     }
 
 
-    // @OnMethod(clazz="/btrace.*/", method="bar",
-    //         location=@Location(value=Kind.CALL))
-    // public static void m(@Self Object self, @TargetMethodOrField String method, @ProbeMethodName String probeMethod) { // all calls to the methods with signature "()"
-    //     println("entered onBar()");
-    //     println(self);
-    //     println(strcat(method, strcat(" in ", probeMethod)));
-    // }
-
-    // @OnMethod(clazz = "/btrace\\\\.*/", method = "/.*/", location = @Location(Kind.RETURN))
-    // public static void trace(@ProbeClassName String pcn, @ProbeMethodName String pmn, @Duration long duration)
-    // {
-    //     // duration的单位是纳秒
-    //     if (duration > 3000000000l)
-    //     {
-    //         print(Strings.strcat("#Duration of ", Strings.strcat(Strings.strcat(pcn, "."), pmn)));
-    //         print(" is ");
-    //         print(duration);
-    //         println("#");
-    //         jstack();
-    //     }
-    // }
 }
