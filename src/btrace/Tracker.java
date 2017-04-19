@@ -2,6 +2,7 @@ package btrace;
 
 import com.sun.btrace.annotations.*;
 
+import static com.sun.btrace.BTraceUtils.jstack;
 import static com.sun.btrace.BTraceUtils.println;
 
 /*方法上的注解
@@ -66,6 +67,8 @@ import static com.sun.btrace.BTraceUtils.println;
 
  本测试案例使用的btrace版本是1.39，又不成功的可能跟btrace版本有关。
 
+
+ linux下要在btrace的目录下运行
  结果输出到文件
  ./btrace -o mylog.txt $pid HelloWorld.java
  mylog会生成在应用的启动目录，而不是btrace的启动目录。其次，执行过一次-o之后，再执行btrace不加-o 也不会再输出回console，直到应用重启为止。
@@ -234,16 +237,15 @@ public class Tracker
 
     // //新建数组时调用，clazz为数组类型
     // @OnMethod(
-    //         clazz = "/btrace.*/", // tracking in all classes; can be restricted to specific user classes
+    //         clazz = "/.*/", // tracking in all classes; can be restricted to specific user classes
     //         method = "/.*/", // tracking in all methods; can be restricted to specific user methods
-    //         location = @Location(value = Kind.NEWARRAY, clazz = "int"))
+    //         location = @Location(value = Kind.NEWARRAY, clazz = "java.lang.Object"))
     // public static void onnew(@ProbeClassName String pcn, @ProbeMethodName String pmn, String arrType, int dim)
     // {
     //     println(pcn + "     " + pmn);
     //     println(arrType + "   " + dim); //arrType 对应clazz dim为维度
+    //     jstack();
     // }
-
-
 
     // @Property
     // public static Profiler swingProfiler = BTraceUtils.Profiling.newProfiler();
@@ -294,13 +296,21 @@ public class Tracker
     //     println(className + "   " + method);
     // }
 
-    //变量被赋值时触发 clazz 和 field 都需要设置
-    @OnMethod(clazz="/btrace.*/", method="/.*/",
-            location = @Location(value=Kind.FIELD_GET, clazz="/.*/", field="j"))
-    public static void onFieldSet(@ProbeMethodName String method, @ProbeClassName String className) {
-        println("on field set");
-        println(className + "   " + method);
+    // //变量被赋值时触发 clazz 和 field 都需要设置
+    // @OnMethod(clazz="/btrace.*/", method="/.*/",
+    //         location = @Location(value=Kind.FIELD_GET, clazz="/.*/", field="j"))
+    // public static void onFieldSet(@ProbeMethodName String method, @ProbeClassName String className) {
+    //     println("on field set");
+    //     println(className + "   " + method);
+    // }
+
+
+    //新建数组时调用，clazz为数组类型
+    @OnMethod(clazz = "+com.troy.fight.logic.BaseGame", method = "run", location = @Location(value = Kind.RETURN))
+    public static void onBaseGameRun(@ProbeClassName String pcn, @ProbeMethodName String pmn, @Duration long duration)
+    {
+        println(pcn + "     " + pmn);
+        println("cost time : " + duration);
+        jstack();
     }
-
-
 }
